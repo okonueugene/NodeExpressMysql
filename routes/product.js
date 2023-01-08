@@ -39,6 +39,25 @@ router.get("/read", (req, res, next) => {
 router.put("/update/:id", (req, res, next) => {
     let product = req.body;
     let id = req.params.id;
+
+    //check if product exists
+    let checkQuery = `SELECT * FROM product WHERE id = ${id}`;
+    connection
+        .query
+        (checkQuery, [id], (err, result) => {
+            if (err) {
+                return res.status(500).json({
+                    error: err
+                });
+            } else {
+                if (result.length == 0) {
+                    return res.status(404).json({
+                        message: "Product not found"
+                    });
+                }
+            }
+        });
+            
     let query = "UPDATE product SET name = ?, description = ?, price = ? WHERE id = ?"; 
     connection
         .query  
